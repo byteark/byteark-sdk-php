@@ -83,19 +83,21 @@ class ByteArkV2UrlSignerTest extends TestCase
         );
     }
 
+    /**
+     * @expectedException InvalidArgumentException
+     */
     public function testSignUrl_withMissingAccessId_shouldThrowInvalidArgumentException()
     {
-        $this->expectException(\InvalidArgumentException::class);
-
         $signer = new ByteArkV2UrlSigner([
             'access_secret' => '2Aj6Wkge4hi1ZYLp0DBG',
         ]);
     }
 
+    /**
+     * @expectedException InvalidArgumentException
+     */
     public function testSignUrl_withMissingAccessSecret_shouldThrowInvalidArgumentException()
     {
-        $this->expectException(\InvalidArgumentException::class);
-
         $signer = new ByteArkV2UrlSigner([
             'access_id' => '31sX5C0lcBiWuGPTzRszYvjxzzI3aCZjJi85ZyB7',
         ]);
