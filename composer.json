@@ -1,0 +1,19 @@
+{
+    "name": "byteark/byteark-sdk-php",
+    "description": "ByteArk SDK for PHP",
+    "keywords": ["byteark"],
+    "license": "MIT",
+    "type": "library",
+    "require": {
+        "php": ">=5.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "ByteArk\\": "lib/",
+            "Tests\\": "tests/"
+        }
+    }
+}
