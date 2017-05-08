@@ -37,8 +37,9 @@ class ByteArkV2UrlSigner
      * Create a new URL Signer instance.
      *
      * Available signed URL options:
-     * array['client-ip']  (Optional) Defines client IP that are allowed to access.
-     * array['header-user-agent']  (Optional) Defines user agent in header that are allowed to access.
+     * array['client_ip']   (Optional) Defines client IP that are allowed to access.
+     * array['method']     (Optional) Defines HTTP method that allows to use (Default is 'GET').
+     * array['user_agent']  (Optional) Defines user agent in header that are allowed to access.
      *
      * @param  string   $url  Original URL to sign
      * @param  int  $expires  The time that signed URL should expires in Unix timestamp in seconds
@@ -61,14 +62,14 @@ class ByteArkV2UrlSigner
     protected function makeQueryParams($url, $expires, $options)
     {
         $queryParams = [
-            'x-ark-access-id' => $this->options['access_id'],
-            'x-ark-auth-type' => 'ark-v2',
-            'x-ark-expires' => $expires,
-            'x-ark-signature' => $this->makeSignature($url, $expires, $options),
+            'x_ark_access_id' => $this->options['access_id'],
+            'x_ark_auth_type' => 'ark-v2',
+            'x_ark_expires' => $expires,
+            'x_ark_signature' => $this->makeSignature($url, $expires, $options),
         ];
 
         foreach ($options as $key => $value) {
-            $queryParams["x-ark-sign-{$key}"] = 1;
+            $queryParams["x_ark_{$key}"] = 1;
         }
 
         ksort($queryParams);
@@ -78,14 +79,20 @@ class ByteArkV2UrlSigner
 
     protected function makeSignature($url, $expires, $options)
     {
-        return md5($this->makeStringToSign($url, $expires, $options));
+        $stringToSign = $this->makeStringToSign($url, $expires, $options);
+
+        return str_replace(
+            ['+', '/', '='],
+            ['-', '_', ''],
+            base64_encode(md5($stringToSign, true))
+        );
     }
 
     protected function makeStringToSign($url, $expires, $options)
     {
         $urlComponents = parse_url($url);
 
-        $linesToSign[] = 'GET';
+        $linesToSign[] = isset($options['method']) ? strtoupper($options['method']) : 'GET';
         $linesToSign[] = $urlComponents['host'];
         $linesToSign[] = $urlComponents['path'];
         $linesToSign = array_merge($linesToSign, $this->makeCustomPolicyLines($options));
