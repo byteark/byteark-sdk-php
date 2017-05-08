@@ -69,7 +69,8 @@ class ByteArkV2UrlSigner
         ];
 
         foreach ($options as $key => $value) {
-            $queryParams["x_ark_{$key}"] = 1;
+            $canonicalKey = $this->makeCanonicalKey($key);
+            $queryParams["x_ark_{$canonicalKey}"] = 1;
         }
 
         ksort($queryParams);
@@ -107,11 +108,17 @@ class ByteArkV2UrlSigner
         $linesToSign = [];
 
         foreach ($options as $key => $value) {
-            $linesToSign[] = "{$key}:{$value}";
+            $canonicalKey = $this->makeCanonicalKey($key);
+            $linesToSign[] = "{$canonicalKey}:{$value}";
         }
 
         sort($linesToSign);
 
         return $linesToSign;
+    }
+
+    protected function makeCanonicalKey($key)
+    {
+        return str_replace('-', '_', strtolower($key));
     }
 }
