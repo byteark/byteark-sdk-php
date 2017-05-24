@@ -22,7 +22,7 @@ class ByteArkV2UrlSigner
         $this->options = $options;
 
         if (!isset($this->options['access_id'])) {
-            throw new \InvalidArgumentException("Access ID option is required.");
+            $this->options['access_id'] = '';
         }
 
         if (!isset($this->options['access_secret'])) {
