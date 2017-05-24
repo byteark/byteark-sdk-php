@@ -98,7 +98,11 @@ class ByteArkV2UrlSigner
 
         $linesToSign[] = isset($options['method']) ? strtoupper($options['method']) : 'GET';
         $linesToSign[] = $urlComponents['host'];
-        $linesToSign[] = $urlComponents['path'];
+        if (isset($options['path_prefix']) && $options['path_prefix']) {
+            $linesToSign[] = $options['path_prefix'];
+        } else {
+            $linesToSign[] = $urlComponents['path'];
+        }
         $linesToSign = array_merge($linesToSign, $this->makeCustomPolicyLines($options));
         $linesToSign[] = $expires;
         $linesToSign[] = $this->options['access_secret'];
@@ -111,7 +115,9 @@ class ByteArkV2UrlSigner
         $linesToSign = [];
 
         foreach ($options as $key => $value) {
-            $linesToSign[] = "{$key}:{$value}";
+            if ($key != 'path_prefix') {
+                $linesToSign[] = "{$key}:{$value}";
+            }
         }
 
         sort($linesToSign);
