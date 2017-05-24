@@ -24,6 +24,7 @@ $signedUrl = $signer->sign(
     1514764800,
     [
         'client_ip' => '103.253.132.65',
+        'path_prefix' => '/video-objects/QDuxJm02TYqJ/',
     ]
 );
 
@@ -34,7 +35,8 @@ http://inox.qoder.byteark.com/video-objects/QDuxJm02TYqJ/playlist.m3u8
     &x_ark_auth_type=ark-v2
     &x_ark_client_ip=1
     &x_ark_expires=1514764800
-    &x_ark_signature=Gr9T_ZdHDy8l8CCPxpFjNg
+    &x_art_path_prefix=%2Fvideo-objects%2FQDuxJm02TYqJ%2F
+    &x_ark_signature=2bkwVFSu6CzW7KmzXkwDbA
 */
 ```
 
