@@ -111,10 +111,7 @@ class ByteArkV2UrlSignerTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
-    public function testSignUrl_withMissingAccessId_shouldThrowInvalidArgumentException()
+    public function testSignUrl_withMissingAccessId_shouldNotThrowInvalidArgumentException()
     {
         $signer = new ByteArkV2UrlSigner([
             'access_secret' => '2Aj6Wkge4hi1ZYLp0DBG',
