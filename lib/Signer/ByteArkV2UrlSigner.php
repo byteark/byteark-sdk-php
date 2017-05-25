@@ -85,15 +85,14 @@ class ByteArkV2UrlSigner
     {
         ksort($queryParams);
 
-        $pairs = [];
-        foreach ($queryParams as $key => $value) {
-            if ($key == 'x_ark_path_prefix') {
-                $pairs[] = "{$key}={$value}";
-            } else {
-                $pairs[] = "{$key}=" . urlencode($value);
-            }
+        if (!isset($this->options['skip_url_encoding']) || !$this->options['skip_url_encoding']) {
+            return http_build_query($queryParams);
         }
 
+        $pairs = [];
+        foreach ($queryParams as $key => $value) {
+            $pairs[] = "{$key}={$value}";
+        }
         return implode('&', $pairs);
     }
 
