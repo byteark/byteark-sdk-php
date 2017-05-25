@@ -17,14 +17,13 @@ Now the only feature availabled is creating signed URL with ByteArk Signature Ve
 $signer = new ByteArkV2UrlSigner([
     'access_id' => '2Aj6Wkge4hi1ZYLp0DBG',
     'access_secret' => '31sX5C0lcBiWuGPTzRszYvjxzzI3aCZjJi85ZyB7',
-    // For path_prefix feature, you may have to use this following options.
-    'skip_url_encoding' => true,
 ]);
 
 $signedUrl = $signer->sign(
     'http://inox.qoder.byteark.com/video-objects/QDuxJm02TYqJ/playlist.m3u8',
     1514764800,
     [
+        'method' => 'GET',
         'client_ip' => '103.253.132.65',
         'path_prefix' => '/video-objects/QDuxJm02TYqJ/',
     ]
