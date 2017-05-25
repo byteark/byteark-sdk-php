@@ -77,7 +77,7 @@ class ByteArkV2UrlSignerTest extends TestCase
                 . '&x_ark_auth_type=ark-v2'
                 . '&x_ark_client_ip=1'
                 . '&x_ark_expires=1514764800'
-                . '&x_ark_path_prefix=%2Fvideo-objects%2FQDuxJm02TYqJ%2F'
+                . '&x_ark_path_prefix=/video-objects/QDuxJm02TYqJ/'
                 . '&x_ark_signature=2bkwVFSu6CzW7KmzXkwDbA',
             $signedUrl
         );
