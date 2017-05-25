@@ -69,10 +69,12 @@ class ByteArkV2UrlSigner
         ];
 
         foreach ($options as $key => $value) {
-            if ($key == 'path_prefix') {
-                $queryParams["x_ark_{$key}"] = $value;
-            } else {
-                $queryParams["x_ark_{$key}"] = 1;
+            if ($this->shouldOptionExistsInQuery($key)) {
+                if ($this->shouldOptionValueExistsInQuery($key)) {
+                    $queryParams["x_ark_{$key}"] = $value;
+                } else {
+                    $queryParams["x_ark_{$key}"] = 1;
+                }
             }
         }
 
@@ -111,13 +113,13 @@ class ByteArkV2UrlSigner
     {
         $urlComponents = parse_url($url);
 
-        $linesToSign[] = isset($options['method']) ? strtoupper($options['method']) : 'GET';
+        $linesToSign[] = isset($options['method']) && $options['method']
+            ? strtoupper($options['method'])
+            : 'GET';
         $linesToSign[] = $urlComponents['host'];
-        if (isset($options['path_prefix']) && $options['path_prefix']) {
-            $linesToSign[] = $options['path_prefix'];
-        } else {
-            $linesToSign[] = $urlComponents['path'];
-        }
+        $linesToSign[] = (isset($options['path_prefix']) && $options['path_prefix'])
+            ? $options['path_prefix']
+            : $urlComponents['path'];
         $linesToSign = array_merge($linesToSign, $this->makeCustomPolicyLines($options));
         $linesToSign[] = $expires;
         $linesToSign[] = $this->options['access_secret'];
@@ -130,7 +132,7 @@ class ByteArkV2UrlSigner
         $linesToSign = [];
 
         foreach ($options as $key => $value) {
-            if ($key != 'path_prefix') {
+            if ($this->shouldOptionExistsInCustomPolicyLine($key)) {
                 $linesToSign[] = "{$key}:{$value}";
             }
         }
@@ -138,5 +140,20 @@ class ByteArkV2UrlSigner
         sort($linesToSign);
 
         return $linesToSign;
+    }
+
+    protected function shouldOptionExistsInCustomPolicyLine($key)
+    {
+        return !in_array($key, ['method', 'path_prefix']);
+    }
+
+    protected function shouldOptionExistsInQuery($key)
+    {
+        return $key != 'method';
+    }
+
+    protected function shouldOptionValueExistsInQuery($key)
+    {
+        return $key == 'path_prefix';
     }
 }
