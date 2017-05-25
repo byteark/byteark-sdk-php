@@ -56,7 +56,7 @@ class ByteArkV2UrlSigner
             $expires = time() + $this->options['default_age'];
         }
 
-        return $url . '?' . http_build_query($this->makeQueryParams($url, $expires, $options));
+        return $url . '?' . $this->makeQueryString($this->makeQueryParams($url, $expires, $options));
     }
 
     protected function makeQueryParams($url, $expires, $options)
@@ -79,6 +79,22 @@ class ByteArkV2UrlSigner
         ksort($queryParams);
 
         return $queryParams;
+    }
+
+    protected function makeQueryString($queryParams)
+    {
+        ksort($queryParams);
+
+        $pairs = [];
+        foreach ($queryParams as $key => $value) {
+            if ($key == 'x_ark_path_prefix') {
+                $pairs[] = "{$key}={$value}";
+            } else {
+                $pairs[] = "{$key}=" . urlencode($value);
+            }
+        }
+
+        return implode('&', $pairs);
     }
 
     protected function makeSignature($url, $expires, $options)
