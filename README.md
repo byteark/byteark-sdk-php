@@ -17,6 +17,8 @@ Now the only feature availabled is creating signed URL with ByteArk Signature Ve
 $signer = new ByteArkV2UrlSigner([
     'access_id' => '2Aj6Wkge4hi1ZYLp0DBG',
     'access_secret' => '31sX5C0lcBiWuGPTzRszYvjxzzI3aCZjJi85ZyB7',
+    // For path_prefix feature, you may have to use this following options.
+    'skip_url_encoding' => true,
 ]);
 
 $signedUrl = $signer->sign(
