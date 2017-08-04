@@ -100,7 +100,7 @@ class ByteArkV2UrlSigner
         return implode('&', $pairs);
     }
 
-    protected function makeSignature($url, $expires, $options)
+    public function makeSignature($url, $expires, $options)
     {
         $stringToSign = $this->makeStringToSign($url, $expires, $options);
 
@@ -111,7 +111,7 @@ class ByteArkV2UrlSigner
         );
     }
 
-    protected function makeStringToSign($url, $expires, $options)
+    public function makeStringToSign($url, $expires, $options)
     {
         $urlComponents = parse_url($url);
 
