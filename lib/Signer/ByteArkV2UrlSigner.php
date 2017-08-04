@@ -22,7 +22,7 @@ class ByteArkV2UrlSigner
         $this->options = $options;
 
         if (!isset($this->options['access_id'])) {
-            throw new \InvalidArgumentException("Access ID option is required.");
+            $this->options['access_id'] = '';
         }
 
         if (!isset($this->options['access_secret'])) {
@@ -56,7 +56,7 @@ class ByteArkV2UrlSigner
             $expires = time() + $this->options['default_age'];
         }
 
-        return $url . '?' . http_build_query($this->makeQueryParams($url, $expires, $options));
+        return $url . '?' . $this->makeQueryString($this->makeQueryParams($url, $expires, $options));
     }
 
     protected function makeQueryParams($url, $expires, $options)
@@ -70,12 +70,34 @@ class ByteArkV2UrlSigner
 
         foreach ($options as $key => $value) {
             $canonicalKey = $this->makeCanonicalKey($key);
-            $queryParams["x_ark_{$canonicalKey}"] = 1;
+
+            if ($this->shouldOptionExistsInQuery($canonicalKey)) {
+                if ($this->shouldOptionValueExistsInQuery($canonicalKey)) {
+                    $queryParams["x_ark_{$canonicalKey}"] = $value;
+                } else {
+                    $queryParams["x_ark_{$canonicalKey}"] = 1;
+                }
+            }
         }
 
         ksort($queryParams);
 
         return $queryParams;
+    }
+
+    protected function makeQueryString($queryParams)
+    {
+        ksort($queryParams);
+
+        if (!isset($this->options['skip_url_encoding']) || !$this->options['skip_url_encoding']) {
+            return http_build_query($queryParams);
+        }
+
+        $pairs = [];
+        foreach ($queryParams as $key => $value) {
+            $pairs[] = "{$key}={$value}";
+        }
+        return implode('&', $pairs);
     }
 
     protected function makeSignature($url, $expires, $options)
@@ -93,9 +115,13 @@ class ByteArkV2UrlSigner
     {
         $urlComponents = parse_url($url);
 
-        $linesToSign[] = isset($options['method']) ? strtoupper($options['method']) : 'GET';
+        $linesToSign[] = isset($options['method']) && $options['method']
+            ? strtoupper($options['method'])
+            : 'GET';
         $linesToSign[] = $urlComponents['host'];
-        $linesToSign[] = $urlComponents['path'];
+        $linesToSign[] = (isset($options['path_prefix']) && $options['path_prefix'])
+            ? $options['path_prefix']
+            : $urlComponents['path'];
         $linesToSign = array_merge($linesToSign, $this->makeCustomPolicyLines($options));
         $linesToSign[] = $expires;
         $linesToSign[] = $this->options['access_secret'];
@@ -109,7 +135,10 @@ class ByteArkV2UrlSigner
 
         foreach ($options as $key => $value) {
             $canonicalKey = $this->makeCanonicalKey($key);
-            $linesToSign[] = "{$canonicalKey}:{$value}";
+
+            if ($this->shouldOptionExistsInCustomPolicyLine($canonicalKey)) {
+                $linesToSign[] = "{$canonicalKey}:{$value}";
+            }
         }
 
         sort($linesToSign);
@@ -120,5 +149,20 @@ class ByteArkV2UrlSigner
     protected function makeCanonicalKey($key)
     {
         return str_replace('-', '_', strtolower($key));
+    }
+
+    protected function shouldOptionExistsInCustomPolicyLine($key)
+    {
+        return !in_array($key, ['method', 'path_prefix']);
+    }
+
+    protected function shouldOptionExistsInQuery($key)
+    {
+        return $key != 'method';
+    }
+
+    protected function shouldOptionValueExistsInQuery($key)
+    {
+        return $key == 'path_prefix';
     }
 }

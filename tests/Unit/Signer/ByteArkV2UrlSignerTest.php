@@ -29,6 +29,31 @@ class ByteArkV2UrlSignerTest extends TestCase
         );
     }
 
+    public function testSignUrl_withCredentials_withCustomHttpMethod_shouldGenerateValidSignedUrl()
+    {
+        $signer = new ByteArkV2UrlSigner([
+            'access_id' => '2Aj6Wkge4hi1ZYLp0DBG',
+            'access_secret' => '31sX5C0lcBiWuGPTzRszYvjxzzI3aCZjJi85ZyB7',
+        ]);
+
+        $signedUrl = $signer->sign(
+            'http://inox.qoder.byteark.com/video-objects/QDuxJm02TYqJ/playlist.m3u8',
+            1514764800,
+            [
+                'method' => 'HEAD',
+            ]
+        );
+
+        $this->assertEquals(
+            'http://inox.qoder.byteark.com/video-objects/QDuxJm02TYqJ/playlist.m3u8'
+                . '?x_ark_access_id=2Aj6Wkge4hi1ZYLp0DBG'
+                . '&x_ark_auth_type=ark-v2'
+                . '&x_ark_expires=1514764800'
+                . '&x_ark_signature=QULE8DQ08f8fhFC-1gDUWQ',
+            $signedUrl
+        );
+    }
+
     public function testSignUrl_withCredentials_withSignClientIpOption_shouldGenerateValidSignedUrl()
     {
         $signer = new ByteArkV2UrlSigner([
@@ -81,6 +106,63 @@ class ByteArkV2UrlSignerTest extends TestCase
         );
     }
 
+    public function testSignUrl_withCredentials_withSignClientIpOption_withPathPrefixOption_shouldGenerateValidSignedUrl()
+    {
+        $signer = new ByteArkV2UrlSigner([
+            'access_id' => '2Aj6Wkge4hi1ZYLp0DBG',
+            'access_secret' => '31sX5C0lcBiWuGPTzRszYvjxzzI3aCZjJi85ZyB7',
+        ]);
+
+        $signedUrl = $signer->sign(
+            'http://inox.qoder.byteark.com/video-objects/QDuxJm02TYqJ/playlist.m3u8',
+            1514764800,
+            [
+                'client_ip' => '103.253.132.65',
+                'path_prefix' => '/video-objects/QDuxJm02TYqJ/',
+            ]
+        );
+
+        $this->assertEquals(
+            'http://inox.qoder.byteark.com/video-objects/QDuxJm02TYqJ/playlist.m3u8'
+                . '?x_ark_access_id=2Aj6Wkge4hi1ZYLp0DBG'
+                . '&x_ark_auth_type=ark-v2'
+                . '&x_ark_client_ip=1'
+                . '&x_ark_expires=1514764800'
+                . '&x_ark_path_prefix=%2Fvideo-objects%2FQDuxJm02TYqJ%2F'
+                . '&x_ark_signature=2bkwVFSu6CzW7KmzXkwDbA',
+            $signedUrl
+        );
+    }
+
+    public function testSignUrl_withCredentials_withSignClientIpOption_withPathPrefixOption_withSkipUrlEncodingOptions_shouldGenerateValidSignedUrl()
+    {
+        $signer = new ByteArkV2UrlSigner([
+            'access_id' => '2Aj6Wkge4hi1ZYLp0DBG',
+            'access_secret' => '31sX5C0lcBiWuGPTzRszYvjxzzI3aCZjJi85ZyB7',
+            'skip_url_encoding' => true,
+        ]);
+
+        $signedUrl = $signer->sign(
+            'http://inox.qoder.byteark.com/video-objects/QDuxJm02TYqJ/playlist.m3u8',
+            1514764800,
+            [
+                'client_ip' => '103.253.132.65',
+                'path_prefix' => '/video-objects/QDuxJm02TYqJ/',
+            ]
+        );
+
+        $this->assertEquals(
+            'http://inox.qoder.byteark.com/video-objects/QDuxJm02TYqJ/playlist.m3u8'
+                . '?x_ark_access_id=2Aj6Wkge4hi1ZYLp0DBG'
+                . '&x_ark_auth_type=ark-v2'
+                . '&x_ark_client_ip=1'
+                . '&x_ark_expires=1514764800'
+                . '&x_ark_path_prefix=/video-objects/QDuxJm02TYqJ/'
+                . '&x_ark_signature=2bkwVFSu6CzW7KmzXkwDbA',
+            $signedUrl
+        );
+    }
+
     public function testSignUrl_withCredentials_withSignClientIpOption_withSignUserAgentOption_shouldGenerateValidSignedUrl()
     {
         $signer = new ByteArkV2UrlSigner([
@@ -109,10 +191,7 @@ class ByteArkV2UrlSignerTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
-    public function testSignUrl_withMissingAccessId_shouldThrowInvalidArgumentException()
+    public function testSignUrl_withMissingAccessId_shouldNotThrowInvalidArgumentException()
     {
         $signer = new ByteArkV2UrlSigner([
             'access_secret' => '2Aj6Wkge4hi1ZYLp0DBG',
