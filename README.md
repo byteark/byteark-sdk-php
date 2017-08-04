@@ -13,10 +13,24 @@ You may install this SDK via [Composer](https://getcomposre.org)
 
 ## Using ByteArkV2UrlSigner class
 
-Create a signer instance with `access_id` and `access_secret`,
-then, call `sign` method with URL, expire timestamp, and custom policies.
+First, create a ByteArkV2UrlSigner instance with `access_id` and `access_secret`.
+(`access_id` is currently optional for ByteArk Fleet).
 
-For example:
+Then, call `sign` method with URL to sign,
+Unix timestamp that the URL should expired, and sign options.
+
+For sign options argument, must include `method`, which determines
+which HTTP method is allowed, and may includes custom policies that appears in
+[ByteArk Documentation](https://docs.byteark.com/article/secure-url-signature-v2/).
+
+The following example will create a signed URL that allows only clients
+within 103.253.0.0/16 subnet (because of `client_subnet16` custom policy)
+to `GET` resource at `http://inox.qoder.byteark.com/video-objects/QDuxJm02TYqJ/playlist.m3u8`,
+and allows the signature to be reused with any resources with URL that starts with
+`http://inox.qoder.byteark.com/video-objects/QDuxJm02TYqJ/`
+(because of `path_prefix` custom policy).
+
+sign the URL that availabed until:
 
 ```php
 $signer = new \ByteArk\Signer\ByteArkV2UrlSigner([
@@ -48,8 +62,9 @@ http://inox.qoder.byteark.com/video-objects/QDuxJm02TYqJ/playlist.m3u8
 
 ## Using RequestInfo class
 
-You may use `getCurrentUrl` method to help you get current URL,
-and `get` method to get some of these policy names:
+After create a RequestInfo instance,
+you may use `getCurrentUrl` method to help you get current URL,
+and use `get` method to get some of these policy names:
 
 * client_ip
 * client_subnet16
@@ -76,6 +91,3 @@ $signedUrl = $signer->sign(
     ]
 );
 ```
-
-For more usage details, please visit
-[ByteArk Documentation](https://docs.byteark.com).
