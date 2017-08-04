@@ -69,11 +69,13 @@ class ByteArkV2UrlSigner
         ];
 
         foreach ($options as $key => $value) {
-            if ($this->shouldOptionExistsInQuery($key)) {
-                if ($this->shouldOptionValueExistsInQuery($key)) {
-                    $queryParams["x_ark_{$key}"] = $value;
+            $canonicalKey = $this->makeCanonicalKey($key);
+
+            if ($this->shouldOptionExistsInQuery($canonicalKey)) {
+                if ($this->shouldOptionValueExistsInQuery($canonicalKey)) {
+                    $queryParams["x_ark_{$canonicalKey}"] = $value;
                 } else {
-                    $queryParams["x_ark_{$key}"] = 1;
+                    $queryParams["x_ark_{$canonicalKey}"] = 1;
                 }
             }
         }
@@ -98,7 +100,7 @@ class ByteArkV2UrlSigner
         return implode('&', $pairs);
     }
 
-    protected function makeSignature($url, $expires, $options)
+    public function makeSignature($url, $expires, $options)
     {
         $stringToSign = $this->makeStringToSign($url, $expires, $options);
 
@@ -109,7 +111,7 @@ class ByteArkV2UrlSigner
         );
     }
 
-    protected function makeStringToSign($url, $expires, $options)
+    public function makeStringToSign($url, $expires, $options)
     {
         $urlComponents = parse_url($url);
 
@@ -132,14 +134,21 @@ class ByteArkV2UrlSigner
         $linesToSign = [];
 
         foreach ($options as $key => $value) {
-            if ($this->shouldOptionExistsInCustomPolicyLine($key)) {
-                $linesToSign[] = "{$key}:{$value}";
+            $canonicalKey = $this->makeCanonicalKey($key);
+
+            if ($this->shouldOptionExistsInCustomPolicyLine($canonicalKey)) {
+                $linesToSign[] = "{$canonicalKey}:{$value}";
             }
         }
 
         sort($linesToSign);
 
         return $linesToSign;
+    }
+
+    protected function makeCanonicalKey($key)
+    {
+        return str_replace('-', '_', strtolower($key));
     }
 
     protected function shouldOptionExistsInCustomPolicyLine($key)
