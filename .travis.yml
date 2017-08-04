@@ -11,4 +11,4 @@ before_install:
   - composer update
 
 script:
-  - vendor/bin/phpunit
+  - composer test
