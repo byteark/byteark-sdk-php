@@ -19,18 +19,36 @@ First, create a ByteArkV2UrlSigner instance with `access_id` and `access_secret`
 Then, call `sign` method with URL to sign,
 Unix timestamp that the URL should expired, and sign options.
 
-For sign options argument, must include `method`, which determines
-which HTTP method is allowed, and may includes custom policies that appears in
+For sign options argument, you may include `method`, which determines
+which HTTP method is allowed (`GET` is the default is not determined),
+and may includes custom policies that appears in
 [ByteArk Documentation](https://docs.byteark.com/article/secure-url-signature-v2/).
 
-The following example will create a signed URL that allows only clients
-within 103.253.0.0/16 subnet (because of `client_subnet16` custom policy)
-to `GET` resource at `http://inox.qoder.byteark.com/video-objects/QDuxJm02TYqJ/playlist.m3u8`,
-and allows the signature to be reused with any resources with URL that starts with
+The following example will create a signed URL that
+allows to `GET` the resource within 1st January 2018:
+
+```php
+$signer = new \ByteArk\Signer\ByteArkV2UrlSigner([
+    'access_id' => '2Aj6Wkge4hi1ZYLp0DBG',
+    'access_secret' => '31sX5C0lcBiWuGPTzRszYvjxzzI3aCZjJi85ZyB7',
+]);
+
+$signedUrl = $signer->sign(
+    'http://sample.cdn.byteark.com/downloads/latest-software.zip',
+    1514764800,
+    [
+        'method' => 'GET',
+    ]
+);
+```
+
+The following example will create a signed URL that:
+
+* Allows to `GET` the resource within 1st January 2018 (bacause of `1514764800` timestamp).
+* And allows only from client within 103.253.0.0/16 subnet (because of `client_subnet16` custom policy).
+* And allows the signature to be reused with any resources with URL that starts with
 `http://inox.qoder.byteark.com/video-objects/QDuxJm02TYqJ/`
 (because of `path_prefix` custom policy).
-
-sign the URL that availabed until:
 
 ```php
 $signer = new \ByteArk\Signer\ByteArkV2UrlSigner([
@@ -47,24 +65,13 @@ $signedUrl = $signer->sign(
         'path_prefix' => '/video-objects/QDuxJm02TYqJ/',
     ]
 );
-
-/*
-Got this url:
-http://inox.qoder.byteark.com/video-objects/QDuxJm02TYqJ/playlist.m3u8
-    ?x_ark_access_id=2Aj6Wkge4hi1ZYLp0DBG
-    &x_ark_auth_type=ark-v2
-    &x_ark_client_subnet16=1
-    &x_ark_expires=1514764800
-    &x_ark_path_prefix=/video-objects/QDuxJm02TYqJ/
-    &x_ark_signature=2bkwVFSu6CzW7KmzXkwDbA
-*/
 ```
 
 ## Using RequestInfo class
 
 After create a RequestInfo instance,
 you may use `getCurrentUrl` method to help you get current URL,
-and use `get` method to get some of these policy names:
+and use `get` method to get values for some of these policies:
 
 * client_ip
 * client_subnet16
