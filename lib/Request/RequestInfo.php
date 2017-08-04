@@ -10,7 +10,7 @@ class RequestInfo
     {
         $this->requestEnv = $requestEnv
             ? $requestEnv
-            : getenv();
+            : $_SERVER;
     }
 
     public function get($name)
