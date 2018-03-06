@@ -13,7 +13,7 @@
 
 You may install this SDK via [Composer](https://getcomposre.org)
 
-    composer install byteark/byteark-sdk-php
+    composer require byteark/byteark-sdk-php
 
 
 ## Using ByteArkV2UrlSigner class
@@ -100,7 +100,7 @@ $signedUrl = $signer->sign(
         'method' => 'GET',
         'client_subnet16' => $requestInfo->get('client_subnet16'),
         'path_prefix' => '/video-objects/QDuxJm02TYqJ/',
-        'referer' => $request->getCurrentUrl()
+        'referer' => $requestInfo->getCurrentUrl()
     ]
 );
 ```
