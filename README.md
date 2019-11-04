@@ -50,7 +50,7 @@ $signedUrl = $signer->sign(
 The following example will create a signed URL that:
 
 * Allows to `GET` the resource within 1st January 2018 (bacause of `1514764800` timestamp).
-* And allows only from client within 103.253.0.0/16 subnet (because of `client_subnet16` custom policy).
+* And allows only request from origin 'https://example.byteark.com' (from parameter 'origin')
 * And allows the signature to be reused with any resources with URL that starts with
 `http://inox.qoder.byteark.com/video-objects/QDuxJm02TYqJ/`
 (because of `path_prefix` custom policy).
@@ -66,7 +66,7 @@ $signedUrl = $signer->sign(
     1514764800,
     [
         'method' => 'GET',
-        'client_subnet16' => '103.253.0.0',
+        'origin' => 'https://example.byteark.com',
         'path_prefix' => '/video-objects/QDuxJm02TYqJ/',
     ]
 );
@@ -80,8 +80,6 @@ you may use `getCurrentUrl` method to help you get current URL,
 and use `get` method to get values for some of these policies:
 
 * client_ip
-* client_subnet16
-* client_subnet24
 * user_agent
 
 For example:
@@ -98,7 +96,6 @@ $signedUrl = $signer->sign(
     1514764800,
     [
         'method' => 'GET',
-        'client_subnet16' => $requestInfo->get('client_subnet16'),
         'path_prefix' => '/video-objects/QDuxJm02TYqJ/',
         'referer' => $requestInfo->getCurrentUrl()
     ]
@@ -110,3 +107,8 @@ $signedUrl = $signer->sign(
 
 You may try [the sample project](https://github.com/byteark/byteark-sdk-php-example)
 that allows you to create signed URLs with simple web form.
+
+## Change Log for 2019-11-04
+
+* Add geo_allow / geo_block parameter for dynamic geo-blocking url by signurl
+* Remove client_subnet16, client_subnet24 parameter support

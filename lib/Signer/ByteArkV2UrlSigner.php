@@ -163,6 +163,6 @@ class ByteArkV2UrlSigner
 
     protected function shouldOptionValueExistsInQuery($key)
     {
-        return $key == 'path_prefix';
+        return in_array($key, ['path_prefix', 'geo_allow', 'geo_block']);
     }
 }
