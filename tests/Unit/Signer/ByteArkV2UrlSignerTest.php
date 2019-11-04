@@ -91,7 +91,7 @@ class ByteArkV2UrlSignerTest extends TestCase
             'http://inox.qoder.byteark.com/video-objects/QDuxJm02TYqJ/playlist.m3u8',
             1514764800,
             [
-                'client-ip' => '103.253.132.65',
+                'client_ip' => '103.253.132.65',
             ]
         );
 

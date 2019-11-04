@@ -15,22 +15,6 @@ class RequestInfoTest extends TestCase
         $this->assertEquals('103.64.253.56', $requestInfo->get('client_ip'));
     }
 
-    public function testGetClientSubnet16()
-    {
-        $requestInfo = new RequestInfo([
-            'REMOTE_ADDR' => '103.64.253.56'
-        ]);
-        $this->assertEquals('103.64.0.0', $requestInfo->get('client_subnet16'));
-    }
-
-    public function testGetClientSubnet24()
-    {
-        $requestInfo = new RequestInfo([
-            'REMOTE_ADDR' => '103.64.253.56'
-        ]);
-        $this->assertEquals('103.64.253.0', $requestInfo->get('client_subnet24'));
-    }
-
     public function testGetUserAgent()
     {
         $requestInfo = new RequestInfo([

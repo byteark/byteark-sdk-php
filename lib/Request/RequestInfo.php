@@ -20,14 +20,6 @@ class RequestInfo
         switch ($name) {
             case 'client_ip':
                 return $clientIp;
-            case 'client_subnet16':
-                return $clientIp
-                    ? long2ip(ip2long($clientIp) & ip2long('255.255.0.0'))
-                    : null;
-            case 'client_subnet24':
-                return $clientIp
-                    ? long2ip(ip2long($clientIp) & ip2long('255.255.255.0'))
-                    : null;
             case 'user_agent':
                 return $this->getEnv('HTTP_USER_AGENT');
             default:
