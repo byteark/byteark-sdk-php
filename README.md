@@ -5,6 +5,8 @@
 
 * [Installation](#installation)
 * [Using ByteArkV2UrlSigner class](#using-byteArkv2urlsigner-class)
+* [Usage for HLS](#usage-for-hls)
+* [Options](#options)
 * [Using RequestInfo class](#using-requestinfo-class)
 * [Example Projects](#example-projects)
 
@@ -39,21 +41,33 @@ $signer = new \ByteArk\Signer\ByteArkV2UrlSigner([
 ]);
 
 $signedUrl = $signer->sign(
-    'http://sample.cdn.byteark.com/downloads/latest-software.zip',
+    'https://example.cdn.byteark.com/path/to/file.png',
     1514764800,
     [
         'method' => 'GET',
     ]
 );
+
+/*
+Output:
+https://example.cdn.byteark.com/path/to/file.png
+    ?x_ark_access_id=2Aj6Wkge4hi1ZYLp0DBG
+    &x_ark_auth_type=ark-v2
+    &x_ark_expires=1514764800
+    &x_ark_signature=OsBgZpn9LTAJowa0UUhlYQ
+*/
 ```
 
-The following example will create a signed URL that:
 
-* Allows to `GET` the resource within 1st January 2018 (bacause of `1514764800` timestamp).
-* And allows only request from origin 'https://example.byteark.com' (from parameter 'origin')
-* And allows the signature to be reused with any resources with URL that starts with
-`http://inox.qoder.byteark.com/video-objects/QDuxJm02TYqJ/`
-(because of `path_prefix` custom policy).
+## Usage for HLS
+
+When signing URL for HLS, you have to choose common path prefix
+and assign to `path_prefix` option is required,
+since ByteArk will automatically create secured URLs for each segments
+using the same options and signature.
+
+For example, if your stream URL is `https://example.cdn.byteark.com/live/playlist.m3u8`,
+you may use `/live/` as a path prefix.
 
 ```php
 $signer = new \ByteArk\Signer\ByteArkV2UrlSigner([
@@ -62,18 +76,49 @@ $signer = new \ByteArk\Signer\ByteArkV2UrlSigner([
 ]);
 
 $signedUrl = $signer->sign(
-    'http://inox.qoder.byteark.com/video-objects/QDuxJm02TYqJ/playlist.m3u8',
+    'https://example.cdn.byteark.com/live/playlist.m3u8',
     1514764800,
     [
         'method' => 'GET',
-        'origin' => 'https://example.byteark.com',
-        'path_prefix' => '/video-objects/QDuxJm02TYqJ/',
+        'path_prefix' => '/live/',
     ]
 );
+
+echo $signedUrl;
+
+/*
+Output:
+https://example.cdn.byteark.com/live/playlist.m3u8
+    ?x_ark_access_id=2Aj6Wkge4hi1ZYLp0DBG
+    &x_ark_auth_type=ark-v2
+    &x_ark_expires=1514764800
+    &x_ark_path_prefix=%2Flive%2F
+    &x_ark_signature=7JGsff2mBQEOoSYHTjxiVQ
+*/
 ```
 
 
+## Options
+
+### ByteArkV2UrlSigner
+
+| Option        | Required | Default | Description                                                               |
+|---------------|----------|---------|---------------------------------------------------------------------------|
+| access_id     | Required | -       | Access key ID for signing                                                 |
+| acesss_secret | Required | -       | Access key secret for signing                                             |
+| default_age   | -        | 900     | Default signed URL age (in seconds), if signing without expired date/time |
+
+### ByteArkV2UrlSigner.sign(url, expires = null, options = [])
+
+| Option      | Required | Default | Description                                                                                                                                                   |
+|-------------|----------|---------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| method      | -        | GET     | HTTP Method that allowed to use with the signed URL                                                                                                           |
+| path_prefix | -        | -       | Path prefix that allowed to use with the signed URL (the same signing options and signature can be reuse with the
+
+
 ## Using RequestInfo class
+
+(This is useful for legacy signing conditions, such as client_ip and user_agent).
 
 After create a RequestInfo instance,
 you may use `getCurrentUrl` method to help you get current URL,
@@ -107,8 +152,3 @@ $signedUrl = $signer->sign(
 
 You may try [the sample project](https://github.com/byteark/byteark-sdk-php-example)
 that allows you to create signed URLs with simple web form.
-
-## Change Log for 2019-11-04
-
-* Add geo_allow / geo_block parameter for dynamic geo-blocking url by signurl
-* Remove client_subnet16, client_subnet24 parameter support
