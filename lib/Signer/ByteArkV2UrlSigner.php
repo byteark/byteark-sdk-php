@@ -163,6 +163,9 @@ class ByteArkV2UrlSigner
 
     protected function shouldOptionValueExistsInQuery($key)
     {
-        return in_array($key, ['path_prefix', 'geo_allow', 'geo_block']);
+        return !in_array($key, [
+            'client_ip',
+            'user_agent'
+        ]);
     }
 }
