@@ -13,7 +13,7 @@
 
 ## Installation
 
-You may install this SDK via [Composer](https://getcomposre.org)
+You may install this SDK via [Composer](https://getcomposer.org)
 
     composer require byteark/byteark-sdk-php
 
@@ -36,8 +36,8 @@ allows to `GET` the resource within 1st January 2018:
 
 ```php
 $signer = new \ByteArk\Signer\ByteArkV2UrlSigner([
-    'access_id' => '2Aj6Wkge4hi1ZYLp0DBG',
-    'access_secret' => '31sX5C0lcBiWuGPTzRszYvjxzzI3aCZjJi85ZyB7',
+    'access_id' => '<access_id>',
+    'access_secret' => '<access_secret>',
 ]);
 
 $signedUrl = $signer->sign(
@@ -71,8 +71,8 @@ you may use `/live/` as a path prefix.
 
 ```php
 $signer = new \ByteArk\Signer\ByteArkV2UrlSigner([
-    'access_id' => '2Aj6Wkge4hi1ZYLp0DBG',
-    'access_secret' => '31sX5C0lcBiWuGPTzRszYvjxzzI3aCZjJi85ZyB7',
+    'access_id' => '<access_id>',
+    'access_secret' => '<access_secret>',
 ]);
 
 $signedUrl = $signer->sign(
@@ -132,8 +132,8 @@ For example:
 ```php
 $requestInfo = new \ByteArk\Request\RequestInfo();
 $signer = new \ByteArk\Signer\ByteArkV2UrlSigner([
-    'access_id' => '2Aj6Wkge4hi1ZYLp0DBG',
-    'access_secret' => '31sX5C0lcBiWuGPTzRszYvjxzzI3aCZjJi85ZyB7',
+    'access_id' => '<access_id>',
+    'access_secret' => '<access_secret>',
 ]);
 
 $signedUrl = $signer->sign(
